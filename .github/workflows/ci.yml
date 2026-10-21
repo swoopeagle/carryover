@@ -1,0 +1,24 @@
+name: ci
+
+# Triggers and concurrency copied verbatim from helpfuls/engineering-patterns.md (billing rules).
+# Steps trimmed: zero dependencies means no lockfile for `npm ci`, and Node's type stripping
+# doesn't type-check. ponytail: add tsc --noEmit as a devDependency if a type bug ever ships.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+      - run: npm test
