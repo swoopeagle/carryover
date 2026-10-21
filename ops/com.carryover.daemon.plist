@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Keeps the daemon up across crashes and logins. It does NOT keep the Mac awake:
+       run it on an always-on machine (the Mac Studio), or keep this one on power with the lid
+       open. A closed laptop captures nothing, and the stream is the only copy. -->
+  <key>Label</key><string>com.carryover.daemon</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/sh</string><string>-c</string>
+    <string>cd "$HOME/projects/carryover" &amp;&amp; exec node src/daemon.ts</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string></dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/tmp/carryover.log</string>
+  <key>StandardErrorPath</key><string>/tmp/carryover.err</string>
+</dict>
+</plist>

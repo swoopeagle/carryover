@@ -64,6 +64,12 @@ export class BeeClient {
     return this.request("POST", "/v1/todos", alarmAtIso ? { text, alarm_at: alarmAtIso } : { text });
   }
 
+  /** Durable changefeed: ids changed since the cursor. The at-most-once stream's safety net. */
+  changes(cursor?: string): Promise<{ conversations: number[]; next_cursor: string }> {
+    const q = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+    return this.request("GET", `/v1/changes${q}`);
+  }
+
   /** Full conversation, for checking whether surviving transcripts carry speaker labels. */
   getConversation(id: number): Promise<Record<string, unknown>> {
     return this.request("GET", `/v1/conversations/${id}`);

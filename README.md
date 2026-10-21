@@ -47,10 +47,17 @@ the transcript are the second signal. Both are proxies, and the page says so.
 Needs Node 26+ (runs TypeScript directly, no build step, no dependencies).
 
 ```
-npm test                          # unit checks on the feature extractors
-npm run replay                    # feed the real captured Bee log through the pipeline
-npm start                         # live: needs `npm i -g @beeai/cli && bee login`
+npm test          # 19 checks: features, store, report, sweep
+npm run replay    # feed the real captured Bee log through the pipeline → data/replay.db
+npm run demo      # the page on the replayed data, http://127.0.0.1:4747
+npm start         # live: stream + page + 10-min durability sweep, one process
 ```
+
+**Running it for a real day.** The stream is the only copy of short conversations, so the daemon
+has to be up the whole time you're wearing the Watch. A closed laptop captures nothing. Run it on
+an always-on machine, or keep this one on power with the lid open; `ops/com.carryover.daemon.plist`
+keeps it alive across crashes (`cp ops/*.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.carryover.daemon.plist`).
+`bee login` once per machine. For the sweep to refill anything missed, also run `bee proxy` there.
 
 ## Files
 

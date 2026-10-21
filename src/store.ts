@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS utterances (
 );
 CREATE INDEX IF NOT EXISTS utterances_spoken_at ON utterances(spoken_at);
 CREATE INDEX IF NOT EXISTS utterances_conv ON utterances(conversation_uuid);
+CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 `;
 
 // Bee deletes short conversations itself while they are still being captured or processed
@@ -117,6 +118,24 @@ export class Store {
   forgetConversation(uuid: string): void {
     this.db.prepare("DELETE FROM utterances WHERE conversation_uuid = ?").run(uuid);
     this.db.prepare("DELETE FROM conversations WHERE uuid = ?").run(uuid);
+  }
+
+  getMeta(key: string): string | null {
+    const r = this.db.prepare("SELECT value FROM meta WHERE key = ?").get(key) as { value: string } | undefined;
+    return r?.value ?? null;
+  }
+
+  setMeta(key: string, value: string): void {
+    this.db.prepare("INSERT INTO meta (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(key, value);
+  }
+
+  uuidForBeeId(beeId: number): string | null {
+    const r = this.db.prepare("SELECT uuid FROM conversations WHERE bee_id = ?").get(beeId) as { uuid: string } | undefined;
+    return r?.uuid ?? null;
+  }
+
+  hasUtterance(id: number): boolean {
+    return this.db.prepare("SELECT 1 FROM utterances WHERE id = ?").get(id) !== undefined;
   }
 
   counts(): { conversations: number; utterances: number } {
