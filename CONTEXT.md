@@ -1,12 +1,15 @@
 # CONTEXT — where Carryover stands
 
-**Last updated: 2026-10-20.** Read this first if you're picking this up cold.
+**Last updated: 2026-10-20, 23:00.** Read this first if you're picking this up cold.
 
 ## ⚡ 2026-10-20 — repo opened
 
-**Status.** Opened the night of Oct 20 with **~2.5 days to deadline** (Oct 23, 12:00 PM PDT).
-Code in progress; runs against a real captured Bee event log so nothing tonight needs hardware.
-**The demo video does need hardware** and that is not yet confirmed (see open questions).
+**Status (end of Oct 20, ~11pm).** **Everything that can be built without hardware is built, tested
+and pushed:** capture pipeline, report, the page, friction log, Devpost draft + video script, CI.
+Repo is public. `@beeai/cli` is installed on this Mac (not yet logged in). **The critical path is now
+entirely Ian's:** Bee app on the Watch SE → `bee login` → one live utterance → wear it Wednesday →
+record Thursday morning → submit before noon PDT. Code only changes again if live data reveals a
+surprise (likeliest: Watch-only capture behaving differently from the Pioneer).
 
 **How we got here.** Ian first proposed a group swear-jar on Bee. It hit three documented walls:
 no speaker identification (pseudonymous labels only, fails at 3+ speakers), single-user auth, and
