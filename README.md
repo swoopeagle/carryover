@@ -75,8 +75,16 @@ the stream really does.
 
 ## First step
 
-**Ian:** `npm i -g @beeai/cli && bee login`, then `bee stream --json` and say a sentence. If an
-utterance prints, the demo is unblocked. Everything else builds against the fixture.
+**Ian — getting the stream running on the Apple Watch SE** (Bee needs watchOS 10+; the SE runs it):
+
+1. Install the **Bee** app on the iPhone, then on the Watch (Watch app → Available Apps). Sign in.
+   Check the Watch is capturing (Bee's green "listening" state) with the Pioneer absent.
+2. iPhone Bee app → Settings → tap **Version 5×** → Developer Mode on.
+3. On the Mac: `npm i -g @beeai/cli && bee login` → approve the pairing in the phone app.
+4. `bee stream --json`, then say a sentence near the Watch. Wait up to 40 s. **If a
+   `new-utterance` line prints, the video is unblocked.** Paste that line into CONTEXT.md.
+
+Everything else builds against the fixture, so none of this blocks the code.
 
 ---
 

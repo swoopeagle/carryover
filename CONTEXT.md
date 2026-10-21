@@ -23,21 +23,28 @@ It also makes the 6–40 s latency irrelevant.
 | 2026-10-20 | Occupies the BSS board's **Bee live lane** (slot #2, was Jay's, concept-blocked, unstarted) | Ian — ⚠️ **tell Jay** |
 | 2026-10-20 | Known tension with pipeline rule 5 (no product for one application): built as a tool Ian would use | Ian |
 | 2026-10-20 | Stack: Node 26 TS with native type stripping, zero deps, `node:sqlite` | build call |
+| 2026-10-20 | **Name locked: Carryover.** Checked in-category; only adjacent hit is Arizona's unshipped articulation "Speech Sounds Carryover App" | Ian |
+| 2026-10-20 | **Hardware: Apple Watch SE** (no Pioneer). Counts per Devpost: *"a Bee device or an Apple Watch running Bee software"*. ⚠️ Watch-only capture not yet seen first-hand | Ian |
+| 2026-10-20 | **Repo is PUBLIC under MIT** → satisfies the Open Source mini ($5K) via the repo itself | Ian |
+| 2026-10-20 | Jay: Ian texts him about slot #2 | Ian |
+| 2026-10-20 | Ian hands the build to Claude to run autonomously through Wed; Ian records + submits Thu | Ian |
 
 ## What we need to do now
 
 **Ian**
-1. **Confirm hardware tonight.** Bee Pioneer in hand, or an Apple Watch with the Bee app? Both
-   count for the track. Then `npm i -g @beeai/cli && bee login`.
-2. Tell Jay the live lane is taken (BSS war room slot #2).
-3. Thursday morning: record the <3 min video. Talk about stuttering in your own words; it's the
+1. **Get the stream running on the Watch SE** — exact steps in [README § First step](README.md#first-step).
+   The moment `bee stream --json` prints an utterance from the Watch, the video is unblocked.
+2. Text Jay about slot #2.
+3. **Wear it Wednesday.** Real data is the video. Fixture data is a fallback, and a worse one.
+4. Thursday morning: record the <3 min video. Talk about stuttering in your own words; it's the
    strongest thing in the entry.
 
 **Build (Claude, tonight → Wed)** — see [TODO.md](TODO.md).
 
 ## Open questions
 
-- **Hardware.** Unconfirmed. The `bee` CLI isn't installed on this Mac, so the Sep spike ran elsewhere.
+- **Does the Watch app capture on its own?** The 09-11 capability read says the Watch app alone counts
+  as Bee hardware, and Devpost says the same. Not yet seen first-hand on the SE. **Ian's install is the test.**
 - **Whose voice is it?** Live utterances carry no speaker label (0 of all events in the capture).
   Options: (a) REST `/v1/conversations/:id` may carry pseudonymous labels for conversations that
   survive, then take the dominant speaker as the wearer; (b) accept room-level metrics and say so;
