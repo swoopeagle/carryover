@@ -5,11 +5,14 @@
   "description": "A local, non-diagnostic speech notepad for people who stutter, built on the Bee wearable's live stream.",
   "type": "module",
   "license": "MIT",
-  "engines": { "node": ">=26" },
+  "engines": {
+    "node": ">=26"
+  },
   "scripts": {
     "test": "node --test test/",
     "replay": "node src/daemon.ts --replay fixtures/spike-stream.log",
     "start": "node src/daemon.ts",
-    "serve": "node src/server.ts"
+    "serve": "node src/server.ts",
+    "demo": "node src/server.ts --db data/replay.db"
   }
 }

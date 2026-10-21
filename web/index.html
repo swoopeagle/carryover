@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carryover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: oklch(0 0 0); --card: oklch(0.14 0 0); --border: oklch(0.26 0 0);
+    --fg: oklch(0.93 0 0); --muted: oklch(0.62 0 0);
+    --amber: oklch(0.81 0.17 75.35); --blue: oklch(0.58 0.21 260.84);
+    --radius: 0.5rem;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: oklch(0.99 0 0); --card: oklch(1 0 0); --border: oklch(0.92 0 0); --fg: oklch(0.15 0 0); --muted: oklch(0.5 0 0); --blue: oklch(0.55 0.22 264.53); }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 Geist, system-ui, sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 32px 16px 64px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 28px; }
+  h1 { font-size: 15px; font-weight: 600; letter-spacing: -.01em; margin: 0; }
+  h2 { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 32px 0 10px; }
+  .mono { font-family: "Geist Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .status { font-size: 12px; color: var(--muted); }
+  .status.live { color: var(--blue); }
+
+  /* The signature: time spent with words in it, as one large accumulating number. */
+  .hero { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); padding: 28px 24px; }
+  .hero .label { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .hero .value { font-size: 72px; line-height: 1; font-weight: 500; letter-spacing: -.03em; margin: 8px 0 4px; }
+  .hero .value small { font-size: 20px; color: var(--muted); letter-spacing: 0; margin-left: 6px; }
+  .hero .sub { color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .tile { background: var(--card); padding: 14px 16px; }
+  .tile .label { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .tile .value { font-size: 24px; font-weight: 500; margin-top: 4px; }
+
+  table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  th, td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--border); }
+  th { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--card); border-top: 0; }
+  td.num, th.num { text-align: right; }
+  tr.flag td { color: var(--amber); }
+  .note { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  .empty { color: var(--muted); padding: 24px 0; }
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Carryover</h1>
+    <span id="status" class="status mono">loading</span>
+  </header>
+
+  <section class="hero">
+    <div class="label">Time you spent saying things</div>
+    <div class="value mono"><span id="spoken">0</span><small id="spoken-unit">min</small></div>
+    <div class="sub"><span id="today-words" class="mono">0</span> words across <span id="today-convs" class="mono">0</span> conversations, <span id="today-label">today</span>.</div>
+  </section>
+
+  <h2>Win log</h2>
+  <div class="grid" id="days"></div>
+  <p class="note">Minutes are time with words in them, not wall-clock. People who stutter tend to remember the hard sentences; this is the count of all of them.</p>
+
+  <h2>Where it flows, and where it doesn't</h2>
+  <table id="contexts">
+    <thead><tr><th>Place</th><th>When</th><th class="num">Conversations</th><th class="num">Words</th><th class="num">Words / sec</th><th class="num">Signals / 100 words</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <p class="note">Words / sec is from each utterance's start and end time. Signals are repeats, fillers and part-words that survived into Bee's transcript. Both are proxies read against your own baseline. Neither is a clinical measure, and Bee keeps no audio.</p>
+
+  <h2>Rooms you've gone quiet in</h2>
+  <div id="quiet"></div>
+
+  <footer>Everything on this page was computed on this machine from Bee's live stream. Carryover is a notepad, not a diagnostic tool.</footer>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const n = (x, d = 0) => x == null ? "—" : Number(x).toFixed(d);
+  async function load() {
+    const r = await fetch("/api/report").then((x) => x.json());
+    const today = r.days.at(-1);
+    const sec = today ? today.spokenSec : 0;
+    $("spoken").textContent = sec >= 90 ? n(sec / 60) : n(sec);
+    $("spoken-unit").textContent = sec >= 90 ? "min" : "sec";
+    $("today-words").textContent = today ? today.words : 0;
+    $("today-convs").textContent = today ? today.conversations : 0;
+    $("today-label").textContent = today ? today.day : "today";
+    $("status").textContent = `${r.totals.utterances} utterances · ${new Date(r.generatedAt).toLocaleTimeString()}`;
+    $("status").classList.toggle("live", r.totals.utterances > 0);
+
+    $("days").innerHTML = r.days.slice(-6).reverse().map((d) => `
+      <div class="tile"><div class="label">${d.day}</div>
+        <div class="value mono">${n(d.spokenSec / 60, 1)}<span style="font-size:12px;color:var(--muted)"> min</span></div>
+        <div class="note" style="margin-top:2px">${d.words} words · ${d.conversations} conv · ${n(d.medianWps, 1)} w/s</div></div>`).join("")
+      || `<div class="tile empty">Nothing captured yet.</div>`;
+
+    const tb = $("contexts").querySelector("tbody");
+    tb.innerHTML = r.contexts.map((c) => `<tr><td>${c.place}</td><td>${c.slot}</td><td class="num mono">${c.conversations}</td><td class="num mono">${c.words}</td><td class="num mono">${n(c.medianWps, 2)}</td><td class="num mono">${n(c.signalsPer100, 1)}</td></tr>`).join("")
+      || `<tr><td colspan="6" class="empty">Nothing captured yet.</td></tr>`;
+
+    $("quiet").innerHTML = r.quietRooms.length
+      ? `<table><thead><tr><th>Place</th><th>When</th><th class="num">Words / conv, last 7 days</th><th class="num">Your usual</th></tr></thead><tbody>${
+          r.quietRooms.map((q) => `<tr class="flag"><td>${q.place}</td><td>${q.slot}</td><td class="num mono">${n(q.recent)}</td><td class="num mono">${n(q.baseline)}</td></tr>`).join("")}</tbody></table>`
+      : `<p class="empty">No room has gone quiet against your own baseline. This needs a few weeks of history to say anything.</p>`;
+  }
+  load();
+  setInterval(load, 15000);
+</script>
+</body>
+</html>
