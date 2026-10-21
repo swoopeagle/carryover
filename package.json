@@ -1,0 +1,15 @@
+{
+  "name": "carryover",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A local, non-diagnostic speech notepad for people who stutter, built on the Bee wearable's live stream.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=26" },
+  "scripts": {
+    "test": "node --test test/",
+    "replay": "node src/daemon.ts --replay fixtures/spike-stream.log",
+    "start": "node src/daemon.ts",
+    "serve": "node src/server.ts"
+  }
+}
